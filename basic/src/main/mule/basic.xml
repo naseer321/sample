@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="fc371ffb-3b9a-4b55-9668-85e1190ff953" >
+		<http:listener-connection host="0.0.0.0" port="8082" />
+	</http:listener-config>
+	<flow name="basicFlow" doc:id="7e28534e-30ef-4fb8-a92d-1dd88a92af96" >
+		<http:listener doc:name="Listener" doc:id="1f54c0e0-2ca6-47a4-b48c-3ad1e3e7e91a" config-ref="HTTP_Listener_config" path="/go"/>
+		<set-payload value="#[attributes.queryParams.number1]" doc:name="number1" doc:id="af4f3c81-b95c-4248-a711-ced9917e0625" />
+		<set-payload value="#[attributes.queryParams.number2]" doc:name="number 2" doc:id="e35611fb-cd9f-4332-bc35-a53c93c3ece1" />
+		<choice doc:name="Choice" doc:id="47503a71-6cdb-4aa7-b21a-b33a31aa140a" >
+			<when expression='#[vars.number1=="naseer"]'>
+				<logger level="INFO" doc:name="nassu" doc:id="b932074a-31e4-4a6a-837d-257a4d9c90a4" message='"Naseer is number 1"'/>
+			</when>
+			<when expression='#[vars.number2=="ali"]'>
+				<logger level="INFO" doc:name="nassu1" doc:id="b3ac8c6d-b9d9-4e13-8eef-952fc4d08f6f" message='"ali is number 2"'/>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="a919c1e2-3cc0-405e-a09d-6beb67f8d5a6" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+
+	"default status"]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="f20c5d95-2c54-49ab-ac2a-ef4be08850c4" message="#[payload]"/>
+	</flow>
+</mule>
